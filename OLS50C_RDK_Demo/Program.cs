@@ -29,6 +29,15 @@ namespace OLS50C_RDK_Demo
             {
                 return;
             }
+            status = device.CheckStatus("GETSTS?", cts.Token);
+
+            // Log in
+            result = device.SendCommand("INITNRML= TMELD,olympus", cts.Token);
+            if (!result)
+            {
+                return;
+            }
+            status = device.CheckStatus("GETSTS?", cts.Token);
 
             // Move out stage
             Console.WriteLine("=============================================");
@@ -51,6 +60,10 @@ namespace OLS50C_RDK_Demo
             }
             status = device.CheckStatus("GETSTS?", cts.Token);
 
+            // Get current Lens and Zoom
+            status = device.CheckStatus("GETOB?", cts.Token);
+            Console.WriteLine($"OB,Zoom: { status }");
+
             // Switch Lens
             Console.WriteLine("=============================================");
             Console.WriteLine("  DANGER!!!");
@@ -64,6 +77,8 @@ namespace OLS50C_RDK_Demo
                 || (input == "5"))
             {
                 device.SendCommand($"CHOB= { input }", cts.Token);
+                status = device.CheckStatus("GETOB?", cts.Token);
+                Console.WriteLine($"OB,Zoom: { status }");
             }
             status = device.CheckStatus("GETSTS?", cts.Token);
 
@@ -80,6 +95,8 @@ namespace OLS50C_RDK_Demo
                 || (input == "80"))
             {
                 device.SendCommand($"CHZOOM= { input }", cts.Token);
+                status = device.CheckStatus("GETOB?", cts.Token);
+                Console.WriteLine($"OB,Zoom: { status }");
             }
             status = device.CheckStatus("GETSTS?", cts.Token);
 
@@ -108,8 +125,8 @@ namespace OLS50C_RDK_Demo
             status = device.CheckStatus("GETSTS?", cts.Token);
 
             // Disconnect
-            device.SendCommand("CHMODE= 1", cts.Token);
-            device.SendCommand("Exit= 1", cts.Token);
+            device.SendCommand("CHMODE= 0", cts.Token);
+            device.SendCommand("Exit= 0", cts.Token);
             device.SendCommand("DISCONNECT= 0", cts.Token);
         }
     }
