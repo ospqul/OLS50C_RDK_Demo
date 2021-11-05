@@ -98,6 +98,8 @@ Description:
 
 Specifies Login ID and Password to start and initialize OLS5000. Once the RDK Server receives this command, it will launch Data Acquisition Application and Analysis Application in remote mode. 
 
+![](images/aquisition_application.jpg)
+
 ![](images/acquisition_login.jpg)
 
 > :warning: **NOTE:**
