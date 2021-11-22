@@ -29,13 +29,13 @@ Go to the software installer folder `OLS50C-RDK_vxxx`, double-click `setup.exe`,
 
 The **User PC** is the remote PC used to communicate with RDK Server; the **Controller PC** is the local PC that runs the RDK Server and controls the OLS5000. The **User PC** must be a separate PC from the **Controller PC**.
 
-![](images/system diagram.jpg)
+![](images/system_diagram.jpg)
 
 ### 2 Network Settings
 
 The User PC communicates with the Controller PC via sockets, so both PCs are required to connect onto the same network. You can either connect the User PC and the Controller PC with an ethernet cable directly, or connect both to the same network switch.
 
-![](images/network diagram.jpg)
+![](images/network_diagram.jpg)
 
 #### 2.1 Controller PC
 
