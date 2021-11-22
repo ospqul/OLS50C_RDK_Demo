@@ -137,7 +137,9 @@ Specifies the Login ID and Password to start and initialize the OLS5000. Once th
 **Command:**
 
 `MVSTG= x,y`
+
 *x			X coordinate [µm]*
+
 *y			Y coordinate [µm]*
 
 Description: 
