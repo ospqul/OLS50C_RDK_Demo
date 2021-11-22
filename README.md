@@ -1,17 +1,41 @@
 # OLS50C RDK Tutorial (C#)
-OLS5000 Remote Development Kit (OLS5000 RDK) is equipped with communication functions via sockets, and can control operations of acquisition, measurement, etc. with commands by connecting User PC as the external communication device.
+The OLS5000 Remote Development Kit (OLS5000 RDK) provides communication functions via sockets. The RDK enables the control of OLS50000 acquisition and measurement operations using commands by connecting a User’s PC as the external communication device.
 
-This quickstart tutorial guides you through installing, and running a C# example code to get you started. The sample project is developed based on .NET Framework 4.6 and can be download [here](https://github.com/ospqul/OLS50C_RDK_Demo). The details of all the commands used in the example code can be found in **OLS5000 RDK User's Manual**.
+This quick start tutorial guides you through installing and running example code written in C# to get you started. The sample project is developed based on .NET Framework 4.6 and can be download [here](https://github.com/ospqul/OLS50C_RDK_Demo). The details of all the commands used in the example code can be found in the **OLS5000 RDK User's Manual**. 
+
+The RDK mainly includes the commands of Data Acquisition App, but does not have full control of the Analysis App. The post-processing steps, such as exporting measured results into CSV format and saving the acquired images, can be included in a macro file and executed by the RDK. Here is a brief overview on what the RDK CAN do and CANNOT do:
+
+**The RDK CAN:**
+
+- Login and initialize OLS5000
+- Move the X-Y stage
+- Move the Z Revolver
+- Switch Objective Lens
+- Change Zoom
+- Start / Stop Acquisition
+- Load / Start / Stop Macro Execution
+- Start / Stop the LIVE image display of OLS5000
+
+**The RDK CANNOT:**
+
+- Receive measured results
+- Output the measured results into CSV format
+- Save the acquired images
+- Save the reports
 
 ### 1 Installation
 
-Go to software installer folder `OLS50C-RDK_vxxx`, double-click `setup.exe`, and follow the instruction to install in **User PC**. 
+Go to the software installer folder `OLS50C-RDK_vxxx`, double-click `setup.exe`, and follow the instructions to install on the **Controller PC**. 
 
-**User PC** is the remote PC used to communicate with RDK Server; **Controller PC** is the local PC that runs the RDK Server and controls the OLS5000.
+The **User PC** is the remote PC used to communicate with RDK Server; the **Controller PC** is the local PC that runs the RDK Server and controls the OLS5000. The **User PC** must be a separate PC from the **Controller PC**.
+
+![](images/system diagram.jpg)
 
 ### 2 Network Settings
 
-The User PC communicates with Controller PC via sockets, so they are required to connect into the same network. You can either connect the User PC and the Controller PC with an ethernet cable directly, or connect both to the same network switch.
+The User PC communicates with the Controller PC via sockets, so both PCs are required to connect onto the same network. You can either connect the User PC and the Controller PC with an ethernet cable directly, or connect both to the same network switch.
+
+![](images/network diagram.jpg)
 
 #### 2.1 Controller PC
 
@@ -34,21 +58,25 @@ You can use the following command in **Command Prompt** to check if the connecti
 ping 192.168.0.1
 ```
 
-### 3 Use of RDK
+If the connection is successful, you will see a similar reply from the host as below:
+
+![](images/ping_host.jpg)
+
+### 3 Example Use of the RDK
 
 > :warning: **WARNING:**
 >
-> 1. Be aware of the moving parts in the OSL5000.
+> 1. Be aware of the moving parts of the OSL5000.
 >
-> 2. Make sure X-Y stage has ample space to operate freely.
+> 2. Make sure the X-Y stage has ample space to operate freely.
 >
-> 3. Make sure the sample not hit by the lens during switching lens or movement of the z axis.
+> 3. Make sure the sample will not be hit by the lens when switching the lenses or moving the Z axis.
 
 #### 3.1 Initialize
 
 #### 3.1.1 Connect TCP
 
-The RDK Server is running as a TCP Server, and a TCP Client can connect to its port `50100`.
+The RDK Server runs as a TCP Server, and a TCP Client can connect to its port `50100`.
 
 Here is a sample `ClientModel`class to implement the basic functions of a TCP Client:
 
@@ -58,7 +86,7 @@ https://github.com/ospqul/OLS50C_RDK_Demo/blob/main/OLS50C_RDK_Demo/ClientModel.
 
 ------
 
-Connect the TCP server with an IP address and port number.
+Connect to the TCP server with an IP address and port number.
 
 ##### Close()
 
@@ -70,7 +98,7 @@ Close the TCP connection.
 
 ---
 
-Send a text message to TCP Server.
+Send a text message to the TCP Server.
 
 **Receive()**
 
@@ -86,7 +114,7 @@ Receive a text message from TCP Server.
 
 Description:
 
-Establishes the connection with OLS5000.
+Establishes the connection with the OLS5000.
 
 #### 3.1.3 Request Normal Start
 
@@ -96,21 +124,11 @@ Establishes the connection with OLS5000.
 
 Description: 
 
-Specifies Login ID and Password to start and initialize OLS5000. Once the RDK Server receives this command, it will launch Data Acquisition Application and Analysis Application in remote mode. 
+Specifies the Login ID and Password to start and initialize the OLS5000. Once the RDK Server receives this command, it will launch the Data Acquisition Application and the Analysis Application in remote mode. 
 
 ![](images/aquisition_application.jpg)
 
 ![](images/acquisition_login.jpg)
-
-> :warning: **NOTE:**
->
-> If the successful completion notification is not returned in 2 minutes, confirm if the macro application is open.
->
-> Default location in the Controller PC:
->
-> `C:\Program Files\OLYMPUS\LEXT-OLS50-SW\MacroApp\MacroApp\macro.exe`
-
-![](images/macro_application.jpg)
 
 #### 3.2 Functions
 
@@ -119,10 +137,14 @@ Specifies Login ID and Password to start and initialize OLS5000. Once the RDK Se
 **Command:**
 
 `MVSTG= x,y`
+*x			X coordinate [µm]*
+*y			Y coordinate [µm]*
 
 Description: 
 
-Moves the motorized XY stage to the specified coordinates.
+Moves the motorized X-Y stage to the specified coordinates.
+
+![](images/XY_Stage.jpg)
 
 Move out the stage: `MVSTG= -50000,50000`
 
@@ -130,7 +152,7 @@ Move in the stage: `MVSTG= 0,0`
 
 >:warning: **WARNING:**
 >
->Make sure X-Y stage has ample space to operate freely before send this command.
+>Make sure the X-Y stage has ample space to operate freely before sending this command.
 
 #### 3.2.2 Switch Objective Lens and Change Zoom
 
@@ -160,7 +182,7 @@ Changes the zoom magnification of OLS5000 to the specified magnification. For ex
 
 ![](images/change_lens_and_zoom.jpg)
 
-#### 3.2.4 Move Home Position
+#### 3.2.4 Move to the Home Position
 
 **Command:**
 
@@ -180,7 +202,7 @@ Moves Z Revolver of OLS5000 to the home position.
 
 `RDWIZ= NAME`
 
-NAME: Macro Names (Either one of return values of `GETWIZNAME?` command)
+NAME: Macro Names (Any of the returned values of `GETWIZNAME?` command)
 
 Description: 
 
@@ -192,7 +214,7 @@ Loads the macros registered in OLS5000. For example, `RDWIZ= macro1.mcr` command
 
 Description: 
 
-Starts the execution of macros opened in OLS5000. A completion notification is returned after completion of macro.
+Starts the execution of macros opened in OLS5000. `WIZEXE= +` is returned after completion of macro.
 
 ### 3.3 Disconnect
 
@@ -220,4 +242,68 @@ Switches OLS5000 mode (Remote / Local) from User PC. For example, send `CHMODE= 
 
 Description: 
 
-Disconnects from OLS5000.
+Disconnects from the OLS5000.
+
+Here is an example of code: https://github.com/ospqul/OLS50C_RDK_Demo/blob/main/OLS50C_RDK_Demo/Program.cs
+
+### 4 RDK User App
+
+The RDK includes a sample user application in `C:\Olympus\OLS50C-RDK\tools\RdkUserApp`, as well as the scripts for common actions.
+
+![](images/RDK_User_App_Commands.jpg)
+
+
+
+
+
+### 5 Troubleshooting Guide
+
+#### 5.1 Communication Error
+
+**Problem Description:**
+
+Failed to connect to `192.168.0.1` port `50100`.
+
+**Possible Reason 1:**
+
+The network settings are incorrect.
+
+**Fix 1:**
+
+Follow Section **2 Network Settings** to set IP Addresses.
+
+**Possible Reason 2:**
+
+The Lan cable between the **Controller PC** and the User PC is broken.
+
+**Fix 2:**
+
+Reconnect Lan cables.
+
+**Possible Reason 3:**
+
+An existing Client is connected to the RDK Server.
+
+> :warning:Note: The RDK Server can only connect to one Client.
+
+**Fix 3:**
+
+Disconnect the existing client, and reconnect to the RDK Server.
+
+#### 5.2 Normal Start Timeout
+
+**Problem Description:**
+
+After sending **Request Normal Start** command `INITNRML= TMELD,olympus`, the completion notification `INITNRML= +` is not returned within two minutes.
+
+**Possible Reason:**
+
+The Macro application is not open.
+
+**Fix:**
+
+Open Macro application manually. The default location in the **Controller PC**:
+
+`C:\Program Files\OLYMPUS\LEXT-OLS50-SW\MacroApp\MacroApp\macro.exe`
+
+![](images/macro_application.jpg)
